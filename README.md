@@ -1,221 +1,75 @@
 # Phoenix-Node
 
-> **Project Phoenix — resurrect a failed AI compute node, learn everything that makes it live, then prove you can rebuild it from ashes.**
+> **Project Phoenix — resurrect a distrusted AI compute node, understand every layer that makes it live, then prove you can rebuild it from evidence instead of memory.**
 
 ## Project status
 
 | Field | Current state |
 |---|---|
 | **Status** | **Active — foundation project** |
-| **Current stage** | Ready to begin Mission 00 / initial PHX-07 inventory; no mission completion is claimed yet |
-| **Lab environment** | Ubuntu Server VM for core work; local NVIDIA GPU access where practical |
-| **Evidence rule** | Real lab output is labeled measured; enterprise-only hardware/topology is labeled modeled/reference |
+| **Current stage** | Ready to begin Mission 00; no mission completion is claimed yet |
+| **Primary environment** | Ubuntu Server VM for core Linux work |
+| **GPU environment** | A real Linux host with direct NVIDIA GPU access is required for Linux driver-installation/troubleshooting evidence; native/dual-boot Linux, another physical Linux GPU host, or a supported temporary cloud GPU are valid options |
+| **Modeled work** | Enterprise-only hardware, topology, BMC, NVLink/NVSwitch, or other unavailable features must be labeled modeled/reference |
 | **Last plan sync** | 2026-08-19 |
-| **License** | No open-source license is granted unless an explicit license is added later |
 
-## Skills you will build
+## Purpose
 
-- Production-style Linux administration
-- Boot process, services, users, permissions, storage, and networking
-- `systemd`, logs, process management, and host troubleshooting
-- NVIDIA driver, CUDA, and GPU runtime fundamentals
-- GPU validation and basic health checks
-- Bash first, then Python/Ansible automation
-- Configuration management and repeatable provisioning
-- Failure injection, incident diagnosis, and recovery
-- Hardening, documentation, and change discipline
+Phoenix-Node is the single-host foundation for the portfolio. You inherit fictional node **PHX-07**, which was removed from service after poorly documented boot, storage, SSH, service, and GPU-software problems.
 
-## General idea
+The objective is not merely to make the machine work. It is to make its state explainable, its failures diagnosable, and its rebuild repeatable.
 
-Phoenix-Node is the **single-host foundation lab** for the portfolio.
+> **If this node failed tonight, could I identify the broken layer, prove the cause, restore service, and rebuild the host without undocumented memory?**
 
-You inherit a fictional compute node called **PHX-07**. It was pulled from an AI cluster after a series of unexplained failures, its documentation is incomplete, and nobody trusts it enough to put it back into service.
+## Skills developed
 
-Your job is to bring it back.
+- Linux boot and userspace boundaries
+- users, groups, permissions, SSH, storage, mounts, services, and networking
+- `systemd`, journals, process and dependency troubleshooting
+- NVIDIA driver/CUDA/runtime boundaries
+- GPU validation and basic health checks where supported
+- Bash, Python/Ansible, idempotency, and repeatable provisioning
+- failure injection, evidence collection, incident reporting, and recovery
 
-At first, that means understanding an ordinary Linux machine from the bottom up. Later, it means installing and validating the NVIDIA software stack, deliberately breaking the host in realistic ways, diagnosing those failures from evidence, and finally automating enough of the build that PHX-07 can be erased and recreated predictably.
+## Mission campaign
 
-The final question is simple:
+The files in [`missions/`](missions/) are authoritative. The campaign is intentionally compact so it fits the 52-week learning plan.
 
-> **If this node died tonight, could I explain why, recover it, and rebuild it without relying on memory?**
+| Mission | Incident / objective | Primary outcome |
+|---|---|---|
+| [00 — Triage PHX-07](missions/00-triage.md) | Establish a trustworthy baseline before changing anything | inventory + host map + first hypotheses |
+| [01 — The Boot That Never Finished](missions/01-boot-chain.md) | Follow firmware/bootloader/kernel/initramfs/systemd boundaries and diagnose a safe boot-time failure | boot-chain evidence + first-bad-unit reasoning |
+| [02 — Access Control](missions/02-access-control.md) | Build and troubleshoot users, groups, permissions, sudo, and SSH access | repeatable access model |
+| [03 — The Vanishing Disk](missions/03-storage.md) | Understand block devices, filesystems, mounts, persistence, and storage failure symptoms | persistent storage configuration + recovery evidence |
+| [04 — Alive but Unreachable](missions/04-host-network.md) | Trace host networking, routes, DNS, sockets, and reachability | host-network diagnosis |
+| [05 — The Driver Rift](missions/05-gpu-stack.md) | Bring a real Linux GPU host through driver → CUDA/runtime → validation | documented GPU software compatibility state |
+| [06 — Ashes to Automation](missions/06-automation.md) | Convert repeatable host configuration into controlled automation | reproducible configuration artifacts |
+| [Final — Phoenix Rising](missions/final-phoenix-rising.md) | Recover and rebuild PHX-07 from documented evidence and source-controlled truth | end-to-end recovery narrative |
 
-This lab can be completed on a laptop using an Ubuntu VM for most exercises. GPU-specific stages can use a Linux installation with access to the laptop's NVIDIA GPU where practical; anything that cannot be reproduced locally should be documented as modeled rather than faked.
+## GPU environment rule
 
----
+A normal Ubuntu VM is sufficient for Missions 00–04 and much of Mission 06, but it does not automatically provide meaningful Linux GPU-driver administration. Before Mission 05, choose an environment where Linux has direct, supported NVIDIA GPU access.
 
-# The story: PHX-07
+WSL can be useful for supplementary CUDA/container exercises, but it should not be presented as evidence that you installed or troubleshot the Linux NVIDIA kernel driver when the driver is actually owned by the Windows host.
 
-Helios Compute once operated a small accelerated-computing cluster. One node developed a reputation.
+## Evidence standard
 
-PHX-07 would disappear from monitoring. Services would fail after reboot. Engineers disagreed about which CUDA version it needed. A storage mount occasionally vanished. Someone fixed SSH by changing three settings and never documented which three.
+For every mission, save enough evidence that another engineer could follow the reasoning:
 
-Eventually the node was shut down and labeled:
+1. expected healthy state or path
+2. symptom
+3. observations
+4. hypothesis
+5. test
+6. root cause
+7. fix
+8. validation
+9. prevention/monitoring idea
 
-> **DO NOT RETURN TO PRODUCTION**
+Use [`evidence/`](evidence/) for real artifacts, [`incidents/`](incidents/) for incident writeups, [`configs/`](configs/) for sanitized configuration, [`diagrams/`](diagrams/) for architecture, and [`automation/`](automation/) for repeatable build work.
 
-You have been given the machine and one instruction:
+Every artifact must distinguish **measured**, **derived**, and **modeled/reference** information.
 
-> Make it boring.
+## Completion condition
 
-A good infrastructure node should not be mysterious. Its configuration should be explainable, its failures should be diagnosable, and its rebuild should be repeatable.
-
-Phoenix-Node turns that requirement into a campaign.
-
----
-
-## Campaign map
-
-| Chapter | Incident / objective | Core skills | Victory condition |
-|---|---|---|---|
-| 00 | **The Ashes** | hardware/OS inventory, architecture, documentation | explain what exists before changing it |
-| 01 | **First Heartbeat** | Linux install, boot chain, users, SSH, time, packages | stable, remotely manageable Linux host |
-| 02 | **The Machine Beneath Linux** | CPU, RAM, PCIe, storage, kernel, devices | trace hardware into the OS |
-| 03 | **Services in the Dark** | `systemd`, processes, logs, dependencies | diagnose a failed service without guessing |
-| 04 | **The Vanishing Volume** | partitions, filesystems, mounts, permissions | repair storage failures and explain persistence |
-| 05 | **The Lost Node** | interfaces, routes, DNS, sockets, firewall basics | distinguish host, network, and application faults |
-| 06 | **Ignition** | NVIDIA driver, CUDA layers, `nvidia-smi` | GPU is visible and software layers are explained |
-| 07 | **Trial by Fire** | load, thermals, logs, GPU health | establish a healthy baseline under stress |
-| 08 | **Sabotage Week** | deliberate multi-layer failures | diagnose injected faults from evidence |
-| 09 | **The Ritual Becomes Code** | Bash, Python, Ansible, idempotency | automate repeatable configuration |
-| 10 | **Burn It Down** | rebuild, validation, documentation | recreate the node from a clean starting point |
-| FINAL | **Rise Again** | full-stack recovery | recover an unknown broken PHX-07 and produce an incident report |
-
----
-
-## The Phoenix rule
-
-Every change should answer four questions:
-
-```text
-1. What problem am I solving?
-2. What layer am I changing?
-3. How will I prove it worked?
-4. How would I undo or recreate it?
-```
-
-A command that works but cannot be explained does not count as mastery.
-
----
-
-## What PHX-07 eventually looks like
-
-```mermaid
-flowchart TB
-    HW[Hardware\nCPU · RAM · PCIe · NVMe · GPU]
-    FW[Firmware / BMC concepts]
-    K[Linux kernel + drivers]
-    OS[Userspace\nsystemd · storage · network]
-    NV[NVIDIA driver]
-    CUDA[CUDA runtime / toolkit]
-    CTR[Container runtime]
-    MON[Health + telemetry]
-    AUTO[Automation + rebuild]
-
-    HW --> FW --> K --> OS
-    K --> NV --> CUDA --> CTR
-    OS --> MON
-    NV --> MON
-    OS --> AUTO
-    NV --> AUTO
-```
-
-The purpose of the diagram is not decoration. As the lab grows, you should be able to point at a symptom and identify which layers could plausibly cause it.
-
----
-
-## Failure deck
-
-Once the healthy baseline exists, PHX-07 gets sabotaged.
-
-Potential incidents include:
-
-- a service disabled or misconfigured
-- a filesystem or mount failure
-- broken ownership or permissions
-- a bad environment variable or PATH assumption
-- DNS failure with otherwise healthy IP connectivity
-- a closed application port
-- exhausted disk space
-- a runaway process
-- a package/version mismatch
-- NVIDIA driver/module problems
-- GPU workload failure with a healthy host
-- reboot-dependent configuration that was never persisted
-
-The goal is **not** to see how quickly you can type the repair.
-
-The goal is to establish:
-
-```text
-symptom
-  ↓
-expected state
-  ↓
-evidence
-  ↓
-failed layer
-  ↓
-hypothesis
-  ↓
-test
-  ↓
-root cause
-  ↓
-repair
-  ↓
-prevention / automation
-```
-
----
-
-## Evidence to keep
-
-The finished project should contain evidence created during real work, such as:
-
-- architecture diagrams
-- selected command output
-- configuration files
-- before/after validation
-- scripts and Ansible roles
-- failure scenarios
-- incident reports
-- recovery measurements
-- lessons learned and tradeoffs
-
-Do **not** add fictional benchmark results or pretend a simulated component was physical hardware.
-
----
-
-## Repository structure
-
-```text
-Phoenix-Node/
-├── README.md
-├── missions/
-├── automation/
-├── configs/
-├── incidents/
-├── evidence/
-├── diagrams/
-└── SECURITY.md
-```
-
-Additional directories should be added when real work needs them. The existing support directories are intentionally instructions-only until evidence is actually produced.
-
----
-
-## Completion standard
-
-Phoenix-Node is complete when you can take a clean Linux starting point and produce a documented GPU-ready host whose:
-
-- important configuration is explainable,
-- health can be validated,
-- common failures can be diagnosed systematically,
-- important setup is automated,
-- and rebuild procedure has actually been tested.
-
-The capstone is not **"I installed CUDA."**
-
-It is:
-
-> **"I understand this node well enough to kill it, diagnose it, and bring it back."**
+Phoenix-Node is complete when PHX-07 is no longer mysterious: the important host layers are documented, one or more failures have been diagnosed from evidence, the GPU software boundary is understood on a real supported environment, and meaningful parts of the host can be recreated predictably from repository-controlled artifacts.
