@@ -1,0 +1,36 @@
+# Sanitized lab-environment description. Copy to a mission-specific file if useful.
+environment:
+  name: phx-07-lab
+  purpose: disposable Linux infrastructure lab
+  platform: vm  # vm | physical | cloud
+  hypervisor_or_provider: replace-me
+
+host:
+  os: Ubuntu Server 24.04 LTS
+  hostname: phx-07
+  cpu_count: null
+  memory_gb: null
+  disk_gb: null
+  network_mode: replace-me
+
+network:
+  addressing: dhcp  # dhcp | static
+  lab_subnet: replace-with-synthetic-lab-subnet
+  management_ip: replace-me
+
+storage:
+  root_filesystem: replace-me
+  extra_lab_disk_present: false
+
+nvidia:
+  direct_gpu_access: false
+  gpu_model: null
+  driver_version: null
+  cuda_version: null
+
+notes:
+  measured_items: []
+  modeled_items: []
+
+# Never store credentials, private keys, tokens, employer/customer details,
+# or real internal network information in this file.
