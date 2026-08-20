@@ -2,6 +2,17 @@
 
 > **Project Phoenix — resurrect a failed AI compute node, learn everything that makes it live, then prove you can rebuild it from ashes.**
 
+## Project status
+
+| Field | Current state |
+|---|---|
+| **Status** | **Active — foundation project** |
+| **Current stage** | Ready to begin Mission 00 / initial PHX-07 inventory; no mission completion is claimed yet |
+| **Lab environment** | Ubuntu Server VM for core work; local NVIDIA GPU access where practical |
+| **Evidence rule** | Real lab output is labeled measured; enterprise-only hardware/topology is labeled modeled/reference |
+| **Last plan sync** | 2026-08-19 |
+| **License** | No open-source license is granted unless an explicit license is added later |
+
 ## Skills you will build
 
 - Production-style Linux administration
@@ -175,24 +186,21 @@ Do **not** add fictional benchmark results or pretend a simulated component was 
 
 ---
 
-## Suggested repository structure
+## Repository structure
 
 ```text
 Phoenix-Node/
 ├── README.md
-├── architecture/
-├── build/
+├── missions/
 ├── automation/
 ├── configs/
-├── validation/
-├── failure-scenarios/
 ├── incidents/
 ├── evidence/
 ├── diagrams/
 └── SECURITY.md
 ```
 
-Folders should be added when the work begins; empty structure is less useful than real evidence.
+Additional directories should be added when real work needs them. The existing support directories are intentionally instructions-only until evidence is actually produced.
 
 ---
 
