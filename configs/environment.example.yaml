@@ -1,25 +1,30 @@
 # Sanitized lab-environment description. Copy to a mission-specific file if useful.
 environment:
   name: phx-07-lab
-  purpose: disposable Linux infrastructure lab
+  purpose: disposable RHEL infrastructure lab
   platform: vm  # vm | physical | cloud
   hypervisor_or_provider: replace-me
 
 host:
-  os: Ubuntu Server 24.04 LTS
+  os: Red Hat Enterprise Linux 10
+  rhel_major_version: 10  # use the HPC team's supported RHEL major version for mentored work
   hostname: phx-07
   cpu_count: null
   memory_gb: null
   disk_gb: null
   network_mode: replace-me
+  selinux_mode: enforcing
+  firewalld_enabled: true
 
 network:
   addressing: dhcp  # dhcp | static
   lab_subnet: replace-with-synthetic-lab-subnet
   management_ip: replace-me
+  networkmanager_connection: replace-me
 
 storage:
   root_filesystem: replace-me
+  lvm_present: null
   extra_lab_disk_present: false
 
 nvidia:
